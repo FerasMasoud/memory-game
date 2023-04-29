@@ -1,6 +1,8 @@
 .App {
   text-align: center;
+  
 }
+
 
 .container {
   height: 100vh;
@@ -16,7 +18,7 @@
   height: 200px;
   width: 200px;
   border: 1px solid black;
-  background: green;
+  /* background: green; */
 }
 
 .card:hover {
