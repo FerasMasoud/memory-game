@@ -30,7 +30,6 @@ function App() {
   const [checkSet, setCheckSet] = useState([]);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [isFlashed, setIsFlashed] = useState(false);
 
   const generateNewRandomCardPosition = () => Math.floor(Math.random() * cardData.length); 
   
@@ -70,7 +69,7 @@ function App() {
   const startGame = async () => {
     setScore(0);
     setLives(3);
-    
+
 
     const revealCardsPromise = () => new Promise((resolve, reject) => 
     {
