@@ -70,6 +70,7 @@ function App() {
   const startGame = async () => {
     setScore(0);
     setLives(3);
+    
 
     const revealCardsPromise = () => new Promise((resolve, reject) => 
     {
