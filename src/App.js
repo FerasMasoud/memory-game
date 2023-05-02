@@ -8,6 +8,7 @@ import balbasurr from "../src/pokemonsPics/balbasurr.png";
 import caterpie from "../src/pokemonsPics/caterpie.png";
 import squirtle from "../src/pokemonsPics/squirtle.png";
 import charmender from "../src/pokemonsPics/charmender.png";
+import backgroundImg from "../src/pokemonsPics/pokemonBall.png"
 
 
 
@@ -29,7 +30,6 @@ function App() {
   const [checkSet, setCheckSet] = useState([]);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [isFlashed, setIsFlashed] = useState(false);
 
   const generateNewRandomCardPosition = () => Math.floor(Math.random() * cardData.length); 
   
@@ -40,7 +40,7 @@ function App() {
     let randomNumber = generateNewRandomCardPosition();
     for(let i = 0; i < cardData.length; i++) {
       if(usedNumbers.includes(randomNumber)) {  
-        for(let i = 0; i < 30; i++) {
+        for(let i = 0; i < 100; i++) {
           randomNumber = generateNewRandomCardPosition();
           if(!usedNumbers.includes(randomNumber)) {
             usedNumbers.push(randomNumber);
@@ -53,33 +53,79 @@ function App() {
       } 
       else {
         usedNumbers.push(randomNumber);
+        console.log(cardData[randomNumber], ' < random card');
+        // let cardDataReset = {...cardData[randomNumber], visible: true};
         newArray.push(cardData[randomNumber]);
       } 
     }
 
-    setCardData(newArray);    
+    let cardDataWithVisiblityTrue = newArray.map((card) => {
+      return {...card, visible: true};
+    })
+
+    setCardData(cardDataWithVisiblityTrue);    
   }
 
-  // flash card at start to memorise positions
-  const handleStartGame = () => {
-    if(!isFlashed) {
-      randomiseCards();
+  const startGame = async () => {
+    setScore(0);
+    setLives(3);
+
+
+    const revealCardsPromise = () => new Promise((resolve, reject) => 
+    {
       setTimeout(() => {
-        setCardData(prev => {
+        console.log('revealing')
+        resolve(setCardData(prev => {
+          const revealCards = prev.map((card) => {
+            return {...card, visible: true};
+          })
+          return revealCards;
+        }))
+        reject('error with revealign cards');
+      }, 10)
+    })
+
+    const shuffleCards = () => new Promise((resolve, reject) => 
+    {
+      setTimeout(() => {
+        console.log('shuffling');
+        resolve(randomiseCards())
+        reject('error with shuffling cards');
+      }, 400);
+    })
+
+    const hideCardsPromise = () => new Promise((resolve, reject) => 
+    {
+      setTimeout(() => {
+        console.log('hiding');
+        resolve(
+          setCardData(prev => {
           const hideCards = prev.map((card) => {
             return {...card, visible: false};
           })
           return hideCards;
-        })
-        setIsFlashed(true);
-      }, 1300)
-    }
+          })
+        )
+        reject('error with hiding cars');
+      }, 3000)
+    })
+    
+    await revealCardsPromise();
+    await shuffleCards();
+    await hideCardsPromise();
+  
   }
 
-  
+  const testPromise = async () => {
+    let np = new Promise((res, rej) => {
+      setTimeout(() => res('resolved!'), 1000);
+    }) 
 
-  console.log(cardData);
-  
+    let result = await np;
+
+    console.log(result);
+  }
+
   if(checkSet.length > 1) {
 
     let cardOne = checkSet[0].name;
@@ -121,15 +167,17 @@ function App() {
     }
   }
 
-  console.log(checkSet);
+  // console.log(checkSet);
   
   return (
-    <div className="App">
+    <div className="App" >
       <div>
         {lives > 0 ? <h3> your lives: {lives} </h3> : null }
         <h3> your score: {score} </h3>
       </div>  
-      <button onClick={handleStartGame}> start game </button>  
+      <button onClick={startGame}> start game </button>  
+      <button onClick={testPromise}> testPromise </button>  
+
       <div className='container'>
         {cardData.map((card) => {
           return (
