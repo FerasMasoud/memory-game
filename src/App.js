@@ -68,8 +68,11 @@ function App() {
   }
 
   const startGame = async () => {
-    // setIsFlashed(false);
-    let revealCardsPromise = new Promise((resolve, reject) => {
+    setScore(0);
+    setLives(3);
+
+    const revealCardsPromise = () => new Promise((resolve, reject) => 
+    {
       setTimeout(() => {
         console.log('revealing')
         resolve(setCardData(prev => {
@@ -78,18 +81,21 @@ function App() {
           })
           return revealCards;
         }))
+        reject('error with revealign cards');
       }, 10)
     })
 
-    let shuffleCards = new Promise((resolve, reject) => {
+    const shuffleCards = () => new Promise((resolve, reject) => 
+    {
       setTimeout(() => {
         console.log('shuffling');
         resolve(randomiseCards())
-      }, 200);
+        reject('error with shuffling cards');
+      }, 400);
     })
 
-    let hideCardsPromise = new Promise((resolve, reject) => {
-      // randomiseCards();
+    const hideCardsPromise = () => new Promise((resolve, reject) => 
+    {
       setTimeout(() => {
         console.log('hiding');
         resolve(
@@ -100,45 +106,26 @@ function App() {
           return hideCards;
           })
         )
-      }, 2000)
+        reject('error with hiding cars');
+      }, 3000)
     })
-
-    let result1 = await revealCardsPromise;
-    let result2 = await shuffleCards;
-    let result3 = await hideCardsPromise;
     
-    return result1, result2, result3;
+    await revealCardsPromise();
+    await shuffleCards();
+    await hideCardsPromise();
+  
   }
 
-  // flash card at start to memorise positions
-  // const handleStartGame = () => {
-  //   setIsFlashed(false);
+  const testPromise = async () => {
+    let np = new Promise((res, rej) => {
+      setTimeout(() => res('resolved!'), 1000);
+    }) 
 
-  //   //reveal cards
-  //   setCardData(prev => {
-  //     const revealCards = prev.map((card) => {
-  //       return {...card, visible: true};
-  //     })
-  //     return revealCards;
-  //   })
+    let result = await np;
 
-  //   randomiseCards();
+    console.log(result);
+  }
 
-  //   //hide cards after 1.5 seconds
-  //   setTimeout(() => {
-  //     setCardData(prev => {
-  //       const hideCards = prev.map((card) => {
-  //         return {...card, visible: false};
-  //       })
-  //       return hideCards;
-  //     })
-  //     setIsFlashed(true);
-  //   }, 2000);
-  // }
-  
-
-  // console.log(cardData);
-  
   if(checkSet.length > 1) {
 
     let cardOne = checkSet[0].name;
@@ -189,6 +176,8 @@ function App() {
         <h3> your score: {score} </h3>
       </div>  
       <button onClick={startGame}> start game </button>  
+      <button onClick={testPromise}> testPromise </button>  
+
       <div className='container'>
         {cardData.map((card) => {
           return (
